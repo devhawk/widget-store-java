@@ -2,8 +2,11 @@ package com.example.demo.config;
 
 import dev.dbos.transact.DBOS;
 
+import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.example.demo.model.Product;
+import com.example.demo.repository.ProductRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +22,7 @@ public class WidgetStoreLifecycle implements SmartLifecycle {
   private static final Logger logger = LoggerFactory.getLogger(WidgetStoreLifecycle.class);
 
   private final DBOS dbos;
+  private final ProductRepository productRepository;
   private final AtomicBoolean running = new AtomicBoolean(false);
 
   @Value("${spring.datasource.url}")
@@ -33,16 +37,32 @@ public class WidgetStoreLifecycle implements SmartLifecycle {
   @Value("${spring.application.name}")
   private String appName;
 
-  public WidgetStoreLifecycle(DBOS dbos) {
+  public WidgetStoreLifecycle(DBOS dbos, ProductRepository productRepository) {
     this.dbos = dbos;
+    this.productRepository = productRepository;
   }
 
   @Override
   public void start() {
+    seedProducts();
     if (!running.getAndSet(true)) {
       dbos.launch();
     } else {
       logger.debug("start called when already launched");
+    }
+  }
+
+  // seed the demo app database with the widget product if it's not already there
+  private void seedProducts() {
+    if (!productRepository.existsById(1)) {
+      Product widget = new Product();
+      widget.setProductId(1);
+      widget.setProduct("Premium Quality Widget");
+      widget.setDescription("Enhance your productivity with our top-rated widgets!");
+      widget.setInventory(100);
+      widget.setPrice(new BigDecimal("99.99"));
+      productRepository.save(widget);
+      logger.info("Seeded initial product data");
     }
   }
 

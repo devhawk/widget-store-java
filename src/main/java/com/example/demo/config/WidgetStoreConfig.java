@@ -22,23 +22,6 @@ import org.springframework.context.annotation.Primary;
 public class WidgetStoreConfig {
 
   @Bean
-  @Primary
-  public DataSource dataSource(
-      @Value("${spring.datasource.url}") String url,
-      @Value("${spring.datasource.username}") String username,
-      @Value("${spring.datasource.password}") String password) {
-
-    ensureDatabaseExists(url, username, password);
-
-    return DataSourceBuilder.create().url(url).username(username).password(password).build();
-  }
-
-  @Bean(initMethod = "migrate")
-  public Flyway flyway(DataSource dataSource) {
-    return Flyway.configure().dataSource(dataSource).locations("classpath:db/migration").load();
-  }
-
-  @Bean
   public WidgetStoreService widgetStoreService(DBOS dbos) {
     var impl = new WidgetStoreServiceImpl(dbos);
     var proxy = dbos.registerWorkflows(WidgetStoreService.class, impl);
@@ -63,6 +46,25 @@ public class WidgetStoreConfig {
         .withDbPassword(Objects.requireNonNullElse(System.getenv("PGPASSWORD"), "dbos"))
         .withAdminServer(true)
         .withAppVersion("0.1.0");
+  }
+
+  // Manually create the DataSource bean so we can create the demo app database if it doesn't
+  // already exist
+  @Bean
+  @Primary
+  public DataSource dataSource(
+      @Value("${spring.datasource.url}") String url,
+      @Value("${spring.datasource.username}") String username,
+      @Value("${spring.datasource.password}") String password) {
+
+    ensureDatabaseExists(url, username, password);
+
+    return DataSourceBuilder.create().url(url).username(username).password(password).build();
+  }
+
+  @Bean(initMethod = "migrate")
+  public Flyway flyway(DataSource dataSource) {
+    return Flyway.configure().dataSource(dataSource).locations("classpath:db/migration").load();
   }
 
   private void ensureDatabaseExists(String url, String username, String password) {

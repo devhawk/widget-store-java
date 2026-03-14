@@ -17,6 +17,3 @@ CREATE TABLE orders (
     FOREIGN KEY (product_id) REFERENCES products(product_id)
 );
 
--- Insert initial product data
-INSERT INTO products (product_id, product, description, inventory, price) VALUES
-(1, 'Premium Quality Widget', 'Enhance your productivity with our top-rated widgets!', 100, 99.99);
