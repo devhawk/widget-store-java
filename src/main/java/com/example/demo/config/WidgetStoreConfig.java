@@ -3,15 +3,40 @@ package com.example.demo.config;
 import dev.dbos.transact.DBOS;
 import dev.dbos.transact.config.DBOSConfig;
 
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Objects;
+
+import javax.sql.DataSource;
 
 import com.example.demo.service.WidgetStoreService;
 import com.example.demo.service.WidgetStoreServiceImpl;
+import org.flywaydb.core.Flyway;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 @Configuration
 public class WidgetStoreConfig {
+
+  @Bean
+  @Primary
+  public DataSource dataSource(
+      @Value("${spring.datasource.url}") String url,
+      @Value("${spring.datasource.username}") String username,
+      @Value("${spring.datasource.password}") String password) {
+
+    ensureDatabaseExists(url, username, password);
+
+    return DataSourceBuilder.create().url(url).username(username).password(password).build();
+  }
+
+  @Bean(initMethod = "migrate")
+  public Flyway flyway(DataSource dataSource) {
+    return Flyway.configure().dataSource(dataSource).locations("classpath:db/migration").load();
+  }
 
   @Bean
   public WidgetStoreService widgetStoreService(DBOS dbos) {
@@ -22,7 +47,7 @@ public class WidgetStoreConfig {
   }
 
   @Bean
-  public DBOS dbos(DBOSConfig config) {
+  public DBOS dbos(DBOSConfig config) throws SQLException {
     return new DBOS(config);
   }
 
@@ -38,5 +63,23 @@ public class WidgetStoreConfig {
         .withDbPassword(Objects.requireNonNullElse(System.getenv("PGPASSWORD"), "dbos"))
         .withAdminServer(true)
         .withAppVersion("0.1.0");
+  }
+
+  private void ensureDatabaseExists(String url, String username, String password) {
+    String dbName = url.substring(url.lastIndexOf('/') + 1);
+    String adminUrl = url.substring(0, url.lastIndexOf('/')) + "/postgres";
+
+    try (var conn = DriverManager.getConnection(adminUrl, username, password);
+        var stmt = conn.prepareStatement("SELECT 1 FROM pg_database WHERE datname = ?")) {
+      stmt.setString(1, dbName);
+      if (!stmt.executeQuery().next()) {
+        try (var create = conn.createStatement()) {
+          create.execute("CREATE DATABASE \"" + dbName + "\"");
+          System.out.println("Created database: " + dbName);
+        }
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to ensure database exists: " + e.getMessage(), e);
+    }
   }
 }

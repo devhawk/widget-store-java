@@ -21,8 +21,10 @@ repositories {
 dependencies {
   implementation("dev.dbos:transact:0.8.0-a50-+") // TODO
   implementation("org.springframework.boot:spring-boot-starter-webmvc")
+  implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.flywaydb:flyway-core")
-  implementation("org.postgresql:postgresql")
+  implementation("org.flywaydb:flyway-database-postgresql")
+  runtimeOnly("org.postgresql:postgresql")
   testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
   testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
