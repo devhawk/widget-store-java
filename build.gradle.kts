@@ -31,6 +31,23 @@ dependencies {
 
 tasks.withType<Test> { useJUnitPlatform() }
 
+tasks.test {
+  testLogging {
+    // Show all test events
+    events("passed", "skipped", "failed", "standardOut", "standardError")
+
+    // Maximum detail for failures
+    exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    showExceptions = true
+    showCauses = true
+    showStackTraces = true
+    showStandardStreams = true
+
+    // Show detailed info
+    minGranularity = 0 // Show individual test methods
+  }
+}
+
 spotless {
   java {
     googleJavaFormat()
