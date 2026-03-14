@@ -5,10 +5,9 @@ import dev.dbos.transact.workflow.Workflow;
 
 import java.time.Duration;
 
+import com.example.demo.repository.WidgetStoreRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.example.demo.repository.WidgetStoreRepository;
 
 public class WidgetStoreServiceImpl implements WidgetStoreService {
   private static final Logger logger = LoggerFactory.getLogger(WidgetStoreServiceImpl.class);

@@ -9,6 +9,7 @@ import com.example.demo.model.Product;
 import com.example.demo.repository.ProductRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.server.context.WebServerInitializedEvent;
 import org.springframework.context.SmartLifecycle;
@@ -16,30 +17,22 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+// the eventual transact-springboot package will include this lifecycle implementation
+// (without the seedProducts code which is only for the demo)
+
 @Component
 @Lazy(false)
 public class WidgetStoreLifecycle implements SmartLifecycle {
   private static final Logger logger = LoggerFactory.getLogger(WidgetStoreLifecycle.class);
 
   private final DBOS dbos;
-  private final ProductRepository productRepository;
   private final AtomicBoolean running = new AtomicBoolean(false);
-
-  @Value("${spring.datasource.url}")
-  private String jdbcUrl;
-
-  @Value("${spring.datasource.username}")
-  private String username;
-
-  @Value("${spring.datasource.password}")
-  private String password;
 
   @Value("${spring.application.name}")
   private String appName;
 
-  public WidgetStoreLifecycle(DBOS dbos, ProductRepository productRepository) {
+  public WidgetStoreLifecycle(DBOS dbos) {
     this.dbos = dbos;
-    this.productRepository = productRepository;
   }
 
   @Override
@@ -51,6 +44,9 @@ public class WidgetStoreLifecycle implements SmartLifecycle {
       logger.debug("start called when already launched");
     }
   }
+
+  @Autowired
+  private ProductRepository productRepository;
 
   // seed the demo app database with the widget product if it's not already there
   private void seedProducts() {

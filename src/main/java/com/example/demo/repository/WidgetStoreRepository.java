@@ -8,11 +8,10 @@ import com.example.demo.dto.ProductDto;
 import com.example.demo.model.Order;
 import com.example.demo.model.OrderStatus;
 import com.example.demo.model.Product;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-// DBOS @Workflow annotations are not yet compatible with Spring  @Transactional annotations yet.
+// DBOS @Workflow annotations are not compatible with Spring  @Transactional annotations yet.
 // So for now, all of the database logic is in this separate service class that is injected into the
 // Workflow class
 

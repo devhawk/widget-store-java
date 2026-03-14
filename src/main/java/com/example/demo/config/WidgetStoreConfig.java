@@ -42,7 +42,7 @@ public class WidgetStoreConfig {
   public DBOSConfig dbosConfig() {
     String databaseUrl = System.getenv("DBOS_SYSTEM_JDBC_URL");
     if (databaseUrl == null || databaseUrl.isEmpty()) {
-      databaseUrl = "jdbc:postgresql://localhost:5432/widget_store_java_sysdb";
+      databaseUrl = "jdbc:postgresql://localhost:5432/widget_store_java";
     }
     return DBOSConfig.defaults("spring-aspect-demo")
         .withDatabaseUrl(databaseUrl)
