@@ -21,7 +21,7 @@ public class Order {
   private Integer orderId;
 
   @Column(name = "order_status", nullable = false)
-  private Integer orderStatus;
+  private OrderStatus orderStatus;
 
   @Column(name = "last_update_time", nullable = false)
   private LocalDateTime lastUpdateTime;
@@ -41,11 +41,11 @@ public class Order {
     this.orderId = orderId;
   }
 
-  public Integer orderStatus() {
+  public OrderStatus orderStatus() {
     return orderStatus;
   }
 
-  public void setOrderStatus(Integer orderStatus) {
+  public void setOrderStatus(OrderStatus orderStatus) {
     this.orderStatus = orderStatus;
   }
 

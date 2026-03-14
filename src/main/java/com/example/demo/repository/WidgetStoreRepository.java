@@ -55,7 +55,7 @@ public class WidgetStoreRepository {
   public Integer createOrder() {
     Product product = productRepository.getReferenceById(PRODUCT_ID);
     Order order = new Order();
-    order.setOrderStatus(OrderStatus.PENDING.value());
+    order.setOrderStatus(OrderStatus.PENDING);
     order.setProduct(product);
     order.setLastUpdateTime(LocalDateTime.now());
     order.setProgressRemaining(10);
@@ -74,12 +74,12 @@ public class WidgetStoreRepository {
 
   @Transactional
   public void markOrderPaid(int orderId) {
-    orderRepository.updateOrderStatus(orderId, OrderStatus.PAID.value());
+    orderRepository.updateOrderStatus(orderId, OrderStatus.PAID);
   }
 
   @Transactional
   public void errorOrder(int orderId) {
-    orderRepository.updateOrderStatus(orderId, OrderStatus.CANCELLED.value());
+    orderRepository.updateOrderStatus(orderId, OrderStatus.CANCELLED);
   }
 
   @Transactional
@@ -91,7 +91,7 @@ public class WidgetStoreRepository {
     order.setProgressRemaining(order.progressRemaining() - 1);
     order.setLastUpdateTime(LocalDateTime.now());
     if (order.progressRemaining() == 0) {
-      order.setOrderStatus(OrderStatus.DISPATCHED.value());
+      order.setOrderStatus(OrderStatus.DISPATCHED);
     }
     orderRepository.save(order);
   }

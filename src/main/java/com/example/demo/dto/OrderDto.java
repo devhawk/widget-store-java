@@ -14,7 +14,7 @@ public record OrderDto(
   public static OrderDto fromEntity(Order order) {
     return new OrderDto(
         order.orderId(),
-        order.orderStatus(),
+        order.orderStatus().value(),
         order.lastUpdateTime(),
         order.product().productId(),
         order.progressRemaining());
