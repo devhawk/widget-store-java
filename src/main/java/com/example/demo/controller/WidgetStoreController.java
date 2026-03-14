@@ -7,7 +7,7 @@ import java.time.Duration;
 
 import com.example.demo.dto.OrderDto;
 import com.example.demo.dto.ProductDto;
-import com.example.demo.service.WidgetStoreRepository;
+import com.example.demo.repository.WidgetStoreRepository;
 import com.example.demo.service.WidgetStoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +61,7 @@ public class WidgetStoreController {
     return ResponseEntity.ok(dtos);
   }
 
-  @GetMapping("/restock")
+  @PostMapping("/restock")
   public ResponseEntity<Void> restockProduct() {
     widgetStoreRepo.setInventory(100);
     return ResponseEntity.ok().build();

@@ -9,7 +9,7 @@ import java.util.Objects;
 
 import javax.sql.DataSource;
 
-import com.example.demo.service.WidgetStoreRepository;
+import com.example.demo.repository.WidgetStoreRepository;
 import com.example.demo.service.WidgetStoreService;
 import com.example.demo.service.WidgetStoreServiceImpl;
 import org.flywaydb.core.Flyway;

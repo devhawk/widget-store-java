@@ -1,4 +1,4 @@
-package com.example.demo.service;
+package com.example.demo.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -8,8 +8,7 @@ import com.example.demo.dto.ProductDto;
 import com.example.demo.model.Order;
 import com.example.demo.model.OrderStatus;
 import com.example.demo.model.Product;
-import com.example.demo.repository.OrderRepository;
-import com.example.demo.repository.ProductRepository;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
