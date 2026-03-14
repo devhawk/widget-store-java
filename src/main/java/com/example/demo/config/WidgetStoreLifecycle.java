@@ -45,8 +45,7 @@ public class WidgetStoreLifecycle implements SmartLifecycle {
     }
   }
 
-  @Autowired
-  private ProductRepository productRepository;
+  @Autowired private ProductRepository productRepository;
 
   // seed the demo app database with the widget product if it's not already there
   private void seedProducts() {

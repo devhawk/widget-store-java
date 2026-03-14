@@ -33,15 +33,14 @@ public class WidgetStoreServiceImpl implements WidgetStoreService {
       dbos.runStep(() -> repo.subtractInventory(), "subtractInventory");
     } catch (RuntimeException e) {
       logger.error("Failed to reserve inventory for workflow {}", DBOS.workflowId());
-      dbos.setEvent(WidgetStoreService.PAYMENT_ID, null);
+      dbos.setEvent(PAYMENT_ID, null);
       return;
     }
 
     var orderId = dbos.runStep(() -> repo.createOrder(), "createOrder");
 
-    dbos.setEvent(WidgetStoreService.PAYMENT_ID, DBOS.workflowId());
-    var payment_status =
-        (String) dbos.recv(WidgetStoreService.PAYMENT_STATUS, Duration.ofSeconds(120));
+    dbos.setEvent(PAYMENT_ID, DBOS.workflowId());
+    var payment_status = (String) dbos.recv(PAYMENT_STATUS, Duration.ofSeconds(120));
 
     if (payment_status != null && payment_status.equals("paid")) {
       logger.info("Payment successful for order {}", orderId);
@@ -53,7 +52,7 @@ public class WidgetStoreServiceImpl implements WidgetStoreService {
       dbos.runStep(() -> repo.undoSubtractInventory(), "undoSubtractInventory");
     }
 
-    dbos.setEvent(WidgetStoreService.ORDER_ID, String.valueOf(orderId));
+    dbos.setEvent(ORDER_ID, String.valueOf(orderId));
   }
 
   @Workflow

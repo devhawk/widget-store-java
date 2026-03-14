@@ -1,5 +1,9 @@
 package com.example.demo.controller;
 
+import static com.example.demo.service.WidgetStoreService.ORDER_ID;
+import static com.example.demo.service.WidgetStoreService.PAYMENT_ID;
+import static com.example.demo.service.WidgetStoreService.PAYMENT_STATUS;
+
 import dev.dbos.transact.DBOS;
 import dev.dbos.transact.StartWorkflowOptions;
 
@@ -73,8 +77,7 @@ public class WidgetStoreController {
 
     var options = new StartWorkflowOptions(key);
     dbos.startWorkflow(() -> service.checkoutWorkflow(), options);
-    var paymentId =
-        (String) dbos.getEvent(key, WidgetStoreService.PAYMENT_ID, Duration.ofSeconds(60));
+    var paymentId = (String) dbos.getEvent(key, PAYMENT_ID, Duration.ofSeconds(60));
     if (paymentId == null) {
       throw new RuntimeException("Item not available");
     } else {
@@ -87,8 +90,8 @@ public class WidgetStoreController {
       @PathVariable String key, @PathVariable String status) {
     logger.info("Payment webhook called with key: " + key + ", status: " + status);
 
-    dbos.send(key, status, WidgetStoreService.PAYMENT_STATUS);
-    var orderId = (String) dbos.getEvent(key, WidgetStoreService.ORDER_ID, Duration.ofSeconds(60));
+    dbos.send(key, status, PAYMENT_STATUS);
+    var orderId = (String) dbos.getEvent(key, ORDER_ID, Duration.ofSeconds(60));
     return ResponseEntity.ok(orderId);
   }
 
