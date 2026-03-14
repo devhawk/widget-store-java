@@ -9,6 +9,7 @@ import java.util.Objects;
 
 import javax.sql.DataSource;
 
+import com.example.demo.service.WidgetStoreRepository;
 import com.example.demo.service.WidgetStoreService;
 import com.example.demo.service.WidgetStoreServiceImpl;
 import org.flywaydb.core.Flyway;
@@ -21,9 +22,12 @@ import org.springframework.context.annotation.Primary;
 @Configuration
 public class WidgetStoreConfig {
 
+  // eventually, we'll have a transact-spring package that will read DBOSConfig from app properties,
+  // create the DBOS instance and use Spring Aspects to register and proxy @Workflow methods
+  // automatically
   @Bean
-  public WidgetStoreService widgetStoreService(DBOS dbos) {
-    var impl = new WidgetStoreServiceImpl(dbos);
+  public WidgetStoreService widgetStoreService(DBOS dbos, WidgetStoreRepository repo) {
+    var impl = new WidgetStoreServiceImpl(dbos, repo);
     var proxy = dbos.registerWorkflows(WidgetStoreService.class, impl);
     impl.setSelf(proxy);
     return proxy;
