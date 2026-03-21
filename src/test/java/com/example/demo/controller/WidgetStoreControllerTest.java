@@ -124,8 +124,7 @@ class WidgetStoreControllerTest {
     String key = "test-key";
     when(mockDBOS.getEvent(eq(key), eq(PAYMENT_ID), any())).thenReturn(null);
 
-    var ex =
-        assertThrows(Exception.class, () -> mockMvc.perform(post("/checkout/{key}", key)));
+    var ex = assertThrows(Exception.class, () -> mockMvc.perform(post("/checkout/{key}", key)));
     assertInstanceOf(RuntimeException.class, ex.getCause());
     assertEquals("Item not available", ex.getCause().getMessage());
   }

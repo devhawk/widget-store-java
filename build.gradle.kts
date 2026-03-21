@@ -13,25 +13,34 @@ description = "Demo project for Spring Boot"
 
 java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
 
-repositories {
-  mavenCentral()
-  mavenLocal() // TODO
-}
+repositories { mavenCentral() }
+
+configurations { create("mockitoAgent") }
 
 dependencies {
-  implementation("dev.dbos:transact:0.8.0-a50-+") // TODO
+  implementation("dev.dbos:transact:0.8.+") // TODO
   implementation("org.springframework.boot:spring-boot-starter-webmvc")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.flywaydb:flyway-core")
   implementation("org.flywaydb:flyway-database-postgresql")
+
   runtimeOnly("org.postgresql:postgresql")
   testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
   testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+  // Add ByteBuddy agent (required by Mockito for inline mocking)
+  add("mockitoAgent", "net.bytebuddy:byte-buddy-agent:1.17.7")
 }
 
 tasks.withType<Test> { useJUnitPlatform() }
 
 tasks.test {
+  // Configure Mockito agent to avoid self-attaching warnings
+  jvmArgs("-javaagent:${configurations["mockitoAgent"].asPath}")
+
+  // Suppress JVM warning about class data sharing when agents are loaded
+  jvmArgs("-Xshare:off")
+
   testLogging {
     // Show all test events
     events("passed", "skipped", "failed", "standardOut", "standardError")

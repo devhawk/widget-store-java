@@ -1,8 +1,10 @@
 package com.example.demo.service;
 
+import static com.example.demo.service.WidgetStoreService.ORDER_ID;
+import static com.example.demo.service.WidgetStoreService.PAYMENT_ID;
+import static com.example.demo.service.WidgetStoreService.PAYMENT_STATUS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import org.mockito.ArgumentMatchers;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -15,14 +17,11 @@ import dev.dbos.transact.DBOS;
 import dev.dbos.transact.execution.ThrowingRunnable;
 import dev.dbos.transact.execution.ThrowingSupplier;
 
-import static com.example.demo.service.WidgetStoreService.ORDER_ID;
-import static com.example.demo.service.WidgetStoreService.PAYMENT_ID;
-import static com.example.demo.service.WidgetStoreService.PAYMENT_STATUS;
-
 import com.example.demo.repository.WidgetStoreRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
@@ -52,7 +51,8 @@ class WidgetStoreServiceImplTest {
 
   @AfterEach
   void verifyNoDirectRepoOrSelfCalls() {
-    // the injected repo and self instances are only ever called indirectly via startWorkflow or runStep
+    // the injected repo and self instances are only ever called indirectly via startWorkflow or
+    // runStep
     verifyNoInteractions(mockRepo, mockSelf);
   }
 
@@ -60,10 +60,7 @@ class WidgetStoreServiceImplTest {
   void checkoutWorkflow_paymentSuccessful_paysAndDispatchesOrder() throws Exception {
     // Arrange
     int orderId = 42;
-    when(mockDBOS.runStep(
-            anySupplier(),
-            eq("createOrder")))
-        .thenReturn(orderId);
+    when(mockDBOS.runStep(anySupplier(), eq("createOrder"))).thenReturn(orderId);
     when(mockDBOS.recv(eq(PAYMENT_STATUS), any())).thenReturn("paid");
 
     // Act
@@ -71,42 +68,23 @@ class WidgetStoreServiceImplTest {
 
     // Assert
     InOrder inOrder = Mockito.inOrder(mockDBOS, mockSelf);
-    inOrder
-        .verify(mockDBOS)
-        .runStep(
-            anyRunnable(), eq("subtractInventory"));
-    inOrder
-        .verify(mockDBOS)
-        .runStep(
-            anySupplier(),
-            eq("createOrder"));
+    inOrder.verify(mockDBOS).runStep(anyRunnable(), eq("subtractInventory"));
+    inOrder.verify(mockDBOS).runStep(anySupplier(), eq("createOrder"));
     inOrder.verify(mockDBOS).setEvent(eq(PAYMENT_ID), any());
     inOrder.verify(mockDBOS).recv(eq(PAYMENT_STATUS), any());
-    inOrder
-        .verify(mockDBOS)
-        .runStep(
-            anyRunnable(), eq("markOrderPaid"));
-    inOrder
-        .verify(mockDBOS)
-        .startWorkflow(anyRunnable());
+    inOrder.verify(mockDBOS).runStep(anyRunnable(), eq("markOrderPaid"));
+    inOrder.verify(mockDBOS).startWorkflow(anyRunnable());
     inOrder.verify(mockDBOS).setEvent(eq(ORDER_ID), eq(String.valueOf(orderId)));
 
-    verify(mockDBOS, never())
-        .runStep(anyRunnable(), eq("errorOrder"));
-    verify(mockDBOS, never())
-        .runStep(
-            anyRunnable(),
-            eq("undoSubtractInventory"));
+    verify(mockDBOS, never()).runStep(anyRunnable(), eq("errorOrder"));
+    verify(mockDBOS, never()).runStep(anyRunnable(), eq("undoSubtractInventory"));
   }
 
   @Test
   void checkoutWorkflow_paymentFailed_cancelsOrderAndRestoresInventory() throws Exception {
     // Arrange
     int orderId = 42;
-    when(mockDBOS.runStep(
-            anySupplier(),
-            eq("createOrder")))
-        .thenReturn(orderId);
+    when(mockDBOS.runStep(anySupplier(), eq("createOrder"))).thenReturn(orderId);
     when(mockDBOS.recv(eq(PAYMENT_STATUS), any())).thenReturn(null);
 
     // Act
@@ -114,19 +92,11 @@ class WidgetStoreServiceImplTest {
 
     // Assert
     InOrder inOrder = Mockito.inOrder(mockDBOS);
-    inOrder
-        .verify(mockDBOS)
-        .runStep(
-            anyRunnable(), eq("errorOrder"));
-    inOrder
-        .verify(mockDBOS)
-        .runStep(
-            anyRunnable(),
-            eq("undoSubtractInventory"));
+    inOrder.verify(mockDBOS).runStep(anyRunnable(), eq("errorOrder"));
+    inOrder.verify(mockDBOS).runStep(anyRunnable(), eq("undoSubtractInventory"));
     inOrder.verify(mockDBOS).setEvent(eq(ORDER_ID), eq(String.valueOf(orderId)));
 
-    verify(mockDBOS, never())
-        .runStep(anyRunnable(), eq("markOrderPaid"));
+    verify(mockDBOS, never()).runStep(anyRunnable(), eq("markOrderPaid"));
   }
 
   @Test
@@ -134,18 +104,14 @@ class WidgetStoreServiceImplTest {
     // Arrange
     doThrow(new RuntimeException("Insufficient Inventory"))
         .when(mockDBOS)
-        .runStep(
-            anyRunnable(), eq("subtractInventory"));
+        .runStep(anyRunnable(), eq("subtractInventory"));
 
     // Act
     service.checkoutWorkflow();
 
     // Assert
     verify(mockDBOS).setEvent(eq(PAYMENT_ID), eq(null));
-    verify(mockDBOS, never())
-        .runStep(
-            anySupplier(),
-            eq("createOrder"));
+    verify(mockDBOS, never()).runStep(anySupplier(), eq("createOrder"));
     verify(mockDBOS, never()).setEvent(eq(ORDER_ID), any());
   }
 
@@ -159,9 +125,7 @@ class WidgetStoreServiceImplTest {
 
     // Assert
     verify(mockDBOS, times(10)).sleep(any());
-    verify(mockDBOS, times(10))
-        .runStep(
-            anyRunnable(), eq("updateOrderProgress"));
+    verify(mockDBOS, times(10)).runStep(anyRunnable(), eq("updateOrderProgress"));
   }
 
   @Test
@@ -176,11 +140,7 @@ class WidgetStoreServiceImplTest {
     InOrder inOrder = Mockito.inOrder(mockDBOS);
     for (int i = 0; i < 10; i++) {
       inOrder.verify(mockDBOS).sleep(any());
-      inOrder
-          .verify(mockDBOS)
-          .runStep(
-              anyRunnable(),
-              eq("updateOrderProgress"));
+      inOrder.verify(mockDBOS).runStep(anyRunnable(), eq("updateOrderProgress"));
     }
   }
 }
