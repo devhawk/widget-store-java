@@ -28,7 +28,7 @@ public class WidgetStoreConfig {
   @Bean
   public WidgetStoreService widgetStoreService(DBOS dbos, WidgetStoreRepository repo) {
     var impl = new WidgetStoreServiceImpl(dbos, repo);
-    var proxy = dbos.registerWorkflows(WidgetStoreService.class, impl);
+    var proxy = dbos.registerProxy(WidgetStoreService.class, impl);
     impl.setSelf(proxy);
     return proxy;
   }

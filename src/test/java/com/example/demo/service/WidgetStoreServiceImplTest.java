@@ -17,6 +17,8 @@ import dev.dbos.transact.DBOS;
 import dev.dbos.transact.execution.ThrowingRunnable;
 import dev.dbos.transact.execution.ThrowingSupplier;
 
+import java.util.Optional;
+
 import com.example.demo.repository.WidgetStoreRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,7 +63,7 @@ class WidgetStoreServiceImplTest {
     // Arrange
     int orderId = 42;
     when(mockDBOS.runStep(anySupplier(), eq("createOrder"))).thenReturn(orderId);
-    when(mockDBOS.recv(eq(PAYMENT_STATUS), any())).thenReturn("paid");
+    when(mockDBOS.recv(eq(PAYMENT_STATUS), any())).thenReturn(Optional.of("paid"));
 
     // Act
     service.checkoutWorkflow();
@@ -85,7 +87,7 @@ class WidgetStoreServiceImplTest {
     // Arrange
     int orderId = 42;
     when(mockDBOS.runStep(anySupplier(), eq("createOrder"))).thenReturn(orderId);
-    when(mockDBOS.recv(eq(PAYMENT_STATUS), any())).thenReturn(null);
+    when(mockDBOS.recv(eq(PAYMENT_STATUS), any())).thenReturn(Optional.empty());
 
     // Act
     service.checkoutWorkflow();

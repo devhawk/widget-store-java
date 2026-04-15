@@ -40,9 +40,9 @@ public class WidgetStoreServiceImpl implements WidgetStoreService {
     var orderId = dbos.runStep(() -> repo.createOrder(), "createOrder");
 
     dbos.setEvent(PAYMENT_ID, DBOS.workflowId());
-    var payment_status = (String) dbos.recv(PAYMENT_STATUS, Duration.ofSeconds(120));
+    var payment_status = dbos.<String>recv(PAYMENT_STATUS, Duration.ofSeconds(120));
 
-    if (payment_status != null && payment_status.equals("paid")) {
+    if (payment_status.map(ps -> ps.equals("paid")).orElse(false)) {
       logger.info("Payment successful for order {}", orderId);
       dbos.runStep(() -> repo.markOrderPaid(orderId), "markOrderPaid");
       dbos.startWorkflow(() -> self.dispatchOrderWorkflow(orderId));
