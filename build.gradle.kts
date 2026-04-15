@@ -13,12 +13,15 @@ description = "Demo project for Spring Boot"
 
 java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
 
-repositories { mavenCentral() }
+repositories {
+  mavenLocal() // TODO: remove
+  mavenCentral()
+}
 
 configurations { create("mockitoAgent") }
 
 dependencies {
-  implementation("dev.dbos:transact:0.8.+") // TODO
+  implementation("dev.dbos:transact-spring-boot-starter:0.8.+") // TODO: finalize version number
   implementation("org.springframework.boot:spring-boot-starter-webmvc")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.flywaydb:flyway-core")
