@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+// Note, this class is automatically proxied and does not require an interface.
+// The DBOS bean is constructor injected and the self bean is property injected.
+
 @Service
 public class WidgetStoreService {
   public static final String PAYMENT_STATUS = "payment_status";

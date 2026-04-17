@@ -19,6 +19,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+// Note, this file does not have *ANY* DBOS code in it. 
+// DBOSConfig and DBOS beans are auto configured by transact-spring-boot-starter
+// DBOS launch/shutdown is automatically invoked by auto configured DBOSLifecycle bean
+// DBOS @Workflow methods are automatically registered by auto configured DBOSWorkflowRegistrar bean
+// DBOS @Workflow and @Step classes are automatically proxied by auto configured DBOSAspect bean
+
+// This configuration class is only responsible for creating/migrating/seeding the app db and for logging the app url on startup
+
 @Configuration
 public class WidgetStoreConfig {
 
