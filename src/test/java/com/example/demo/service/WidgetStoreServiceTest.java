@@ -27,7 +27,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-class WidgetStoreServiceImplTest {
+class WidgetStoreServiceTest {
 
   private static ThrowingRunnable<RuntimeException> anyRunnable() {
     return ArgumentMatchers.any();
@@ -40,14 +40,14 @@ class WidgetStoreServiceImplTest {
   private DBOS mockDBOS;
   private WidgetStoreRepository mockRepo;
   private WidgetStoreService mockSelf;
-  private WidgetStoreServiceImpl service;
+  private WidgetStoreService service;
 
   @BeforeEach
   void setUp() {
     mockDBOS = mock(DBOS.class);
     mockRepo = mock(WidgetStoreRepository.class);
     mockSelf = mock(WidgetStoreService.class);
-    service = new WidgetStoreServiceImpl(mockDBOS, mockRepo);
+    service = new WidgetStoreService(mockDBOS, mockRepo);
     service.setSelf(mockSelf);
   }
 

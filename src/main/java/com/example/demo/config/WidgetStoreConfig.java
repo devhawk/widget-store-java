@@ -1,7 +1,5 @@
 package com.example.demo.config;
 
-import dev.dbos.transact.DBOS;
-
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
@@ -9,9 +7,6 @@ import javax.sql.DataSource;
 
 import com.example.demo.model.Product;
 import com.example.demo.repository.ProductRepository;
-import com.example.demo.repository.WidgetStoreRepository;
-import com.example.demo.service.WidgetStoreService;
-import com.example.demo.service.WidgetStoreServiceImpl;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,21 +24,8 @@ public class WidgetStoreConfig {
 
   private static final Logger logger = LoggerFactory.getLogger(WidgetStoreConfig.class);
 
-  // eventually, we'll have a transact-spring package that will read DBOSConfig from app properties,
-  // create the DBOS instance and use Spring Aspects to register and proxy @Workflow methods
-  // automatically
-  @Bean
-  public WidgetStoreService widgetStoreService(DBOS dbos, WidgetStoreRepository repo) {
-    var impl = new WidgetStoreServiceImpl(dbos, repo);
-    var proxy = dbos.registerProxy(WidgetStoreService.class, impl);
-    impl.setSelf(proxy);
-    return proxy;
-  }
-
   @Component
   static class AppStartedLogger {
-    private static final Logger logger = LoggerFactory.getLogger(AppStartedLogger.class);
-
     @Value("${spring.application.name}")
     private String appName;
 
